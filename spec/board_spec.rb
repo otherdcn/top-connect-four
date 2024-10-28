@@ -39,7 +39,7 @@ describe Board do
       end
 
       it "has the value of 'H8' as the last element " do
-        expect(@key.flatten.last).to eq 'H8'
+        expect(@key.flatten.last).to eq 'G6'
       end
     end
   end

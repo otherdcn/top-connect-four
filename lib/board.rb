@@ -2,13 +2,13 @@ class Board
   attr_reader :grid, :key
 
   def initialize
-    @grid = Array.new(3) { Array.new(3, ".") }
+    @grid = Array.new(6) { Array.new(7, ".") }
     @key = set_key
   end
 
   def set_key
-    column_ids = "A".upto("H").map(&:to_s)
-    row_ids = "1".upto("8").map(&:to_s)
+    column_ids = "A".upto("G").map(&:to_s)
+    row_ids = "1".upto("6").map(&:to_s)
     final_board = []
 
     row_ids.map do |rank|
