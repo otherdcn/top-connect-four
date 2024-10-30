@@ -47,14 +47,15 @@ describe Board do
   describe "#insert_disk" do
     subject(:board) { described_class.new }
     let(:player_disk) { "X" }
+    let(:points_ids) { %w[A2 G4 C1 F6 E4 D3 B5] }
+    let(:points_id_coords) { [[1,0], [3,6], [0,2], [5,5], [3,4], [2,3], [4,1]] }
 
     context "checking validity of input" do
-      let(:valid_point) { "E3" }
       let(:invalid_point) { ["EE3", "P3", "PP", "A", "4", ""] }
 
       context "given a valid point 'E3'" do
         it "raises no error" do
-          expect { board.insert_disk(player_disk, valid_point) }.to_not raise_error
+          expect { board.insert_disk(player_disk, "E3") }.to_not raise_error
         end
       end
 
@@ -130,6 +131,121 @@ describe Board do
         it "raises a StandardError instance" do
           expect { board.insert_disk(player_disk, unavailable_points[6]) }.to raise_error(StandardError, "Unavailable Point ID provided")
         end
+      end
+    end
+
+    context "translating the point_id into its respective grid position" do
+      it "locates and returns 'A2' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[0])
+        expect(point_id_coord).to eq(points_id_coords[0])
+      end
+
+      it "locates and returns 'G4' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[1])
+        expect(point_id_coord).to eq(points_id_coords[1])
+      end
+
+      it "locates and returns 'C1' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[2])
+        expect(point_id_coord).to eq(points_id_coords[2])
+      end
+
+      it "locates and returns 'F6' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[3])
+        expect(point_id_coord).to eq(points_id_coords[3])
+      end
+
+      it "locates and returns 'E4' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[4])
+        expect(point_id_coord).to eq(points_id_coords[4])
+      end
+
+      it "locates and returns 'D3' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[5])
+        expect(point_id_coord).to eq(points_id_coords[5])
+      end
+
+      it "locates and returns 'B5' position" do
+        point_id_coord = board.insert_disk(player_disk, points_ids[6])
+        expect(point_id_coord).to eq(points_id_coords[6])
+      end
+    end
+
+    context "adding disk to point_id's position in the grid" do
+      it "changes the element's value for 'A2'" do
+        row, col = points_id_coords[0]
+        expect { board.insert_disk(player_disk, points_ids[0]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'G4'" do
+        row, col = points_id_coords[1]
+        expect { board.insert_disk(player_disk, points_ids[1]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'C1'" do
+        row, col = points_id_coords[2]
+        expect { board.insert_disk(player_disk, points_ids[2]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'F6'" do
+        row, col = points_id_coords[3]
+        expect { board.insert_disk(player_disk, points_ids[3]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'E4'" do
+        row, col = points_id_coords[4]
+        expect { board.insert_disk(player_disk, points_ids[4]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'D3'" do
+        row, col = points_id_coords[5]
+        expect { board.insert_disk(player_disk, points_ids[5]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+
+      it "changes the element's value for 'B5'" do
+        row, col = points_id_coords[6]
+        expect { board.insert_disk(player_disk, points_ids[6]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
+      end
+    end
+
+    context "adding point_id to points_marked array" do
+      before do
+        @points_marked = board.instance_variable_get(:@points_marked)
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[0])
+        expect(@points_marked).to include(points_ids[0])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[1])
+        expect(@points_marked).to include(points_ids[1])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[2])
+        expect(@points_marked).to include(points_ids[2])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[3])
+        expect(@points_marked).to include(points_ids[3])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[4])
+        expect(@points_marked).to include(points_ids[4])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[5])
+        expect(@points_marked).to include(points_ids[5])
+      end
+
+      it do
+        board.insert_disk(player_disk, points_ids[6])
+        expect(@points_marked).to include(points_ids[6])
       end
     end
   end
