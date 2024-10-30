@@ -47,15 +47,15 @@ describe Board do
   describe "#insert_disk" do
     subject(:board) { described_class.new }
     let(:player_disk) { "X" }
-    let(:points_ids) { %w[A2 G4 C1 F6 E4 D3 B5] }
-    let(:points_id_coords) { [[1,0], [3,6], [0,2], [5,5], [3,4], [2,3], [4,1]] }
+    let(:points_ids) { %w[A2 B5 C1 D3 E4 F6 G4] }
+    let(:points_id_coords) { [[1,0], [4,1], [0,2], [2,3], [3,4], [5,5], [3,6]] }
 
     context "checking validity of input" do
       let(:invalid_point) { ["EE3", "P3", "PP", "A", "4", ""] }
 
-      context "given a valid point 'E3'" do
+      context "given a valid point 'A6'" do
         it "raises no error" do
-          expect { board.insert_disk(player_disk, "E3") }.to_not raise_error
+          expect { board.insert_disk(player_disk, "A6") }.to_not raise_error
         end
       end
 
@@ -98,14 +98,16 @@ describe Board do
 
     context "checking availability of input" do
       let(:unavailable_points) { %w[A6 B6 B5 C6 D6 E6 E5] }
+      let(:allowed_points) { %w[A5 B4 C5 D5 E4 F6 G6] }
 
       before do
         board.instance_variable_set(:@points_marked, unavailable_points)
+        board.instance_variable_set(:@points_allowed, allowed_points)
       end
 
-      context "given an available input A3" do
+      context "given an available input A5" do
         it "raises no error" do
-          expect { board.insert_disk(player_disk, "A3") }.to_not raise_error
+          expect { board.insert_disk(player_disk, "A5") }.to_not raise_error
         end
       end
 
@@ -115,26 +117,48 @@ describe Board do
         end
       end
 
-      context "given an available input B6" do
+      context "given an unavailable input B6" do
         it "raises a StandardError instance" do
           expect { board.insert_disk(player_disk, unavailable_points[1]) }.to raise_error(StandardError, "Unavailable Point ID provided")
         end
       end
 
-      context "given an available input B5" do
+      context "given an unavailable input B5" do
         it "raises a StandardError instance" do
           expect { board.insert_disk(player_disk, unavailable_points[2]) }.to raise_error(StandardError, "Unavailable Point ID provided")
         end
       end
 
-      context "given an available input E5" do
+      context "given an unavailable input E5" do
         it "raises a StandardError instance" do
           expect { board.insert_disk(player_disk, unavailable_points[6]) }.to raise_error(StandardError, "Unavailable Point ID provided")
         end
       end
     end
 
+    context "checking allowability of input" do
+      it "raises no error given an allowed 'A6' point_id" do
+        expect { board.insert_disk(player_disk, "A6") }.to_not raise_error
+      end
+
+      it "raises no error given an allowed 'B6' point_id" do
+        expect { board.insert_disk(player_disk, "B6") }.to_not raise_error
+      end
+
+      it "raises no error given an allowed 'F6' point_id" do
+        expect { board.insert_disk(player_disk, "F6") }.to_not raise_error
+      end
+
+      it "raises a StandardError instance given a not yet opened 'A5' point_id" do
+        expect { board.insert_disk(player_disk, "A5") }.to raise_error(StandardError, "Blocked Point ID provided")
+      end
+    end
+
     context "translating the point_id into its respective grid position" do
+      before do
+        board.instance_variable_set(:@points_allowed, points_ids)
+      end
+
       it "locates and returns 'A2' position" do
         point_id_coord = board.insert_disk(player_disk, points_ids[0])
         expect(point_id_coord).to eq(points_id_coords[0])
@@ -172,12 +196,16 @@ describe Board do
     end
 
     context "adding disk to point_id's position in the grid" do
+      before do
+        board.instance_variable_set(:@points_allowed, points_ids)
+      end
+
       it "changes the element's value for 'A2'" do
         row, col = points_id_coords[0]
         expect { board.insert_disk(player_disk, points_ids[0]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
 
-      it "changes the element's value for 'G4'" do
+      it "changes the element's value for 'B5'" do
         row, col = points_id_coords[1]
         expect { board.insert_disk(player_disk, points_ids[1]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
@@ -187,7 +215,7 @@ describe Board do
         expect { board.insert_disk(player_disk, points_ids[2]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
 
-      it "changes the element's value for 'F6'" do
+      it "changes the element's value for 'D3'" do
         row, col = points_id_coords[3]
         expect { board.insert_disk(player_disk, points_ids[3]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
@@ -197,12 +225,12 @@ describe Board do
         expect { board.insert_disk(player_disk, points_ids[4]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
 
-      it "changes the element's value for 'D3'" do
+      it "changes the element's value for 'F6'" do
         row, col = points_id_coords[5]
         expect { board.insert_disk(player_disk, points_ids[5]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
 
-      it "changes the element's value for 'B5'" do
+      it "changes the element's value for 'G4'" do
         row, col = points_id_coords[6]
         expect { board.insert_disk(player_disk, points_ids[6]) }.to change { board.grid[row][col] }.from(".").to(player_disk)
       end
@@ -211,6 +239,7 @@ describe Board do
     context "adding point_id to points_marked array" do
       before do
         @points_marked = board.instance_variable_get(:@points_marked)
+        board.instance_variable_set(:@points_allowed, points_ids.dup)
       end
 
       it do
@@ -246,6 +275,28 @@ describe Board do
       it do
         board.insert_disk(player_disk, points_ids[6])
         expect(@points_marked).to include(points_ids[6])
+      end
+    end
+
+    context "replacing current allowed point_id with the above column point_id" do
+      before do
+        @points_allowed = board.instance_variable_get(:@points_allowed)
+      end
+
+      it do
+        expect { board.insert_disk(player_disk, "B6") }.to change { @points_allowed[1] }.from("B6").to("B5")
+      end
+
+      it do
+        expect { board.insert_disk(player_disk, "D6") }.to change { @points_allowed[3] }.from("D6").to("D5")
+      end
+
+      it do
+        expect { board.insert_disk(player_disk, "F6") }.to change { @points_allowed[5] }.from("F6").to("F5")
+      end
+
+      it do
+        expect { board.insert_disk(player_disk, "G6") }.to change { @points_allowed[6] }.from("G6").to("G5")
       end
     end
   end
