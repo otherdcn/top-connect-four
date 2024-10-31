@@ -98,11 +98,11 @@ describe Board do
 
     context "checking availability of input" do
       let(:unavailable_points) { %w[A6 B6 B5 C6 D6 E6 E5] }
-      let(:allowed_points) { %w[A5 B4 C5 D5 E4 F6 G6] }
+      let(:accessible_points) { %w[A5 B4 C5 D5 E4 F6 G6] }
 
       before do
         board.instance_variable_set(:@points_marked, unavailable_points)
-        board.instance_variable_set(:@points_allowed, allowed_points)
+        board.instance_variable_set(:@points_accessible, accessible_points)
       end
 
       context "given an available input A5" do
@@ -136,27 +136,27 @@ describe Board do
       end
     end
 
-    context "checking allowability of input" do
-      it "raises no error given an allowed 'A6' point_id" do
+    context "checking accessibility of input" do
+      it "raises no error given an accessible 'A6' point_id" do
         expect { board.insert_disk(player_disk, "A6") }.to_not raise_error
       end
 
-      it "raises no error given an allowed 'B6' point_id" do
+      it "raises no error given an accessible 'B6' point_id" do
         expect { board.insert_disk(player_disk, "B6") }.to_not raise_error
       end
 
-      it "raises no error given an allowed 'F6' point_id" do
+      it "raises no error given an accessible 'F6' point_id" do
         expect { board.insert_disk(player_disk, "F6") }.to_not raise_error
       end
 
-      it "raises a StandardError instance given a not yet opened 'A5' point_id" do
+      it "raises a StandardError instance given an inaccessible 'A5' point_id" do
         expect { board.insert_disk(player_disk, "A5") }.to raise_error(StandardError, "Blocked Point ID provided")
       end
     end
 
     context "translating the point_id into its respective grid position" do
       before do
-        board.instance_variable_set(:@points_allowed, points_ids)
+        board.instance_variable_set(:@points_accessible, points_ids)
       end
 
       it "locates and returns 'A2' position" do
@@ -197,7 +197,7 @@ describe Board do
 
     context "adding disk to point_id's position in the grid" do
       before do
-        board.instance_variable_set(:@points_allowed, points_ids)
+        board.instance_variable_set(:@points_accessible, points_ids)
       end
 
       it "changes the element's value for 'A2'" do
@@ -239,7 +239,7 @@ describe Board do
     context "adding point_id to points_marked array" do
       before do
         @points_marked = board.instance_variable_get(:@points_marked)
-        board.instance_variable_set(:@points_allowed, points_ids.dup)
+        board.instance_variable_set(:@points_accessible, points_ids.dup)
       end
 
       it do
@@ -278,25 +278,25 @@ describe Board do
       end
     end
 
-    context "replacing current allowed point_id with the above column point_id" do
+    context "replacing current accessible point_id with the above column point_id" do
       before do
-        @points_allowed = board.instance_variable_get(:@points_allowed)
+        @points_accessible = board.instance_variable_get(:@points_accessible)
       end
 
       it do
-        expect { board.insert_disk(player_disk, "B6") }.to change { @points_allowed[1] }.from("B6").to("B5")
+        expect { board.insert_disk(player_disk, "B6") }.to change { @points_accessible[1] }.from("B6").to("B5")
       end
 
       it do
-        expect { board.insert_disk(player_disk, "D6") }.to change { @points_allowed[3] }.from("D6").to("D5")
+        expect { board.insert_disk(player_disk, "D6") }.to change { @points_accessible[3] }.from("D6").to("D5")
       end
 
       it do
-        expect { board.insert_disk(player_disk, "F6") }.to change { @points_allowed[5] }.from("F6").to("F5")
+        expect { board.insert_disk(player_disk, "F6") }.to change { @points_accessible[5] }.from("F6").to("F5")
       end
 
       it do
-        expect { board.insert_disk(player_disk, "G6") }.to change { @points_allowed[6] }.from("G6").to("G5")
+        expect { board.insert_disk(player_disk, "G6") }.to change { @points_accessible[6] }.from("G6").to("G5")
       end
     end
   end

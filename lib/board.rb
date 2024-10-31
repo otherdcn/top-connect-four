@@ -5,7 +5,7 @@ class Board
     @grid = Array.new(6) { Array.new(7, ".") }
     @key = set_key
     @points_marked = []
-    @points_allowed = @key.last
+    @points_accessible = @key.last
   end
 
   def set_key
@@ -28,7 +28,7 @@ class Board
   def insert_disk(player_disk, point_id)
     raise StandardError, "Invalid Point ID provided" unless valid?(point_id)
     raise StandardError, "Unavailable Point ID provided" unless available?(point_id)
-    raise StandardError, "Blocked Point ID provided" unless allowed?(point_id)
+    raise StandardError, "Blocked Point ID provided" unless accessible?(point_id)
 
     point_coord = get_point_id_coord(point_id)
 
@@ -36,7 +36,7 @@ class Board
 
     make_point_unavailable(point_id)
 
-    replace_allowed_point_with_new(point_id)
+    replace_accessible_point_with_new(point_id)
 
     point_coord
   end
@@ -49,8 +49,8 @@ class Board
     !@points_marked.include?(point_id)
   end
 
-  def allowed?(point_id)
-    @points_allowed.include?(point_id)
+  def accessible?(point_id)
+    @points_accessible.include?(point_id)
   end
 
   def get_point_id_coord(point_id)
@@ -70,12 +70,12 @@ class Board
     @points_marked << point_id
   end
 
-  def replace_allowed_point_with_new(point_id)
+  def replace_accessible_point_with_new(point_id)
     row, col = point_id.split("")
     col = (col.to_i - 1).to_s
 
-    @points_allowed[@points_allowed.index(point_id)] = row+col
+    @points_accessible[@points_accessible.index(point_id)] = row+col
   end
 
-  private :set_key, :valid?, :available?, :get_point_id_coord, :make_point_unavailable, :replace_allowed_point_with_new
+  private :set_key, :valid?, :available?, :get_point_id_coord, :make_point_unavailable, :replace_accessible_point_with_new
 end
