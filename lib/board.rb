@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Board
   attr_reader :grid, :key
 
@@ -6,23 +8,6 @@ class Board
     @key = set_key
     @points_marked = []
     @points_accessible = @key.last
-  end
-
-  def set_key
-    column_ids = "A".upto("G").map(&:to_s)
-    row_ids = "1".upto("6").map(&:to_s)
-    final_board = []
-
-    row_ids.map do |rank|
-      row = []
-      column_ids.map do |file|
-        row << file+rank
-      end
-      final_board << row
-      row = []
-    end
-
-    final_board
   end
 
   def insert_disk(player_disk, point_id)
@@ -39,6 +24,52 @@ class Board
     replace_accessible_point_with_new(point_id)
 
     point_coord
+  end
+
+  def display_grid(marked_point = nil, winning_points = [])
+    print "\n-------- Grid -------- ".center(31).underline
+    print "-------- Key --------".center(31).underline
+    puts ""
+    point_padding = 4
+    grid.each_with_index do |row, row_idx|
+      key_row = key[row_idx]
+      row.each_with_index do |point, point_idx|
+        if marked_point == [row_idx, point_idx]
+          print "#{point}".ljust(point_padding).colorize(:magenta)
+        elsif winning_points.include?([row_idx, point_idx])
+          print "#{point}".ljust(point_padding).colorize(:green)
+        else
+          print "#{point}".ljust(point_padding).colorize(:default)
+        end
+
+        next unless point_idx == 6
+
+        print "|".center(10)
+
+        key_row.each { |kdp| print kdp.ljust(point_padding)}
+
+        puts "" if point_idx == 6
+      end
+    end
+  end
+
+  private
+
+  def set_key
+    column_ids = "A".upto("G").map(&:to_s)
+    row_ids = "1".upto("6").map(&:to_s)
+    final_board = []
+
+    row_ids.map do |rank|
+      row = []
+      column_ids.map do |file|
+        row << file+rank
+      end
+      final_board << row
+      row = []
+    end
+
+    final_board
   end
 
   def valid?(point_id)
@@ -76,6 +107,4 @@ class Board
 
     @points_accessible[@points_accessible.index(point_id)] = row+col
   end
-
-  private :set_key, :valid?, :available?, :get_point_id_coord, :make_point_unavailable, :replace_accessible_point_with_new
 end
