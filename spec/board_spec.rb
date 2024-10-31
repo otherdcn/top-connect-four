@@ -300,4 +300,92 @@ describe Board do
       end
     end
   end
+
+  describe "#four_connected_in_a_row" do
+    subject(:board_check) { described_class.new }
+    let(:player_disk) { "X" }
+
+    context "when none is found" do
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to be_nil
+      end
+    end
+
+    context "when only 1 in a row" do
+      before do
+        board_check.grid[3][3] = player_disk
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to be_nil
+      end
+    end
+
+    context "when only 2 in a row " do
+      before do
+        row = 2 # index based
+        start_col = 0
+        start_col.upto(start_col + 1) { |col| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to be_nil
+      end
+    end
+
+    context "when only 3 in a row" do
+      before do
+        row = 4 # index based
+        start_col = 0
+        start_col.upto(start_col + 2) { |col| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to be_nil
+      end
+    end
+
+    context "when found in 6th row" do
+      before do
+        row = 5 # index based
+        start_col = 0
+        start_col.upto(start_col + 3) { |col| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to eq([[5,0], [5,1], [5,2], [5,3]])
+      end
+    end
+
+    context "when found in 4th row" do
+      before do
+        row = 3 # index based
+        start_col = 3
+        start_col.upto(start_col + 3) { |col| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to eq([[3,3], [3,4], [3,5], [3,6]])
+      end
+    end
+
+    context "when found in 1st row" do
+      before do
+        row = 0 # index based
+        start_col = 2
+        start_col.upto(start_col + 3) { |col| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        row_found = board_check.four_connected_in_a_row(player_disk)
+        expect(row_found).to eq([[0,2], [0,3], [0,4], [0,5]])
+      end
+    end
+  end
 end

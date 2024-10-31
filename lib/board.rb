@@ -53,6 +53,29 @@ class Board
     end
   end
 
+  def four_connected_in_a_row(player_disk)
+    four_in_a_row = nil
+
+    grid.each_with_index do |row, row_idx|
+      4.times do |col_idx|
+        if row[col_idx] == player_disk &&
+           row[col_idx + 1] == player_disk &&
+           row[col_idx + 2] == player_disk &&
+           row[col_idx + 3] == player_disk
+          four_in_a_row = [
+            [row_idx, col_idx],
+            [row_idx, col_idx + 1],
+            [row_idx, col_idx + 2],
+            [row_idx, col_idx + 3]
+          ]
+        end
+      end
+      break if four_in_a_row
+    end
+
+    four_in_a_row
+  end
+
   private
 
   def set_key
