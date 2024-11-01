@@ -388,4 +388,105 @@ describe Board do
       end
     end
   end
+
+  describe "#four_connected_in_a_column" do
+    subject(:board_check) { described_class.new }
+    let(:player_disk) { "X" }
+
+    context "when none is found" do
+      it do
+        col_found = board_check.four_connected_in_a_column(player_disk)
+        expect(col_found).to be_nil
+      end
+    end
+
+    context "when only 1 in a row" do
+      before do
+        board_check.grid[1][1] = player_disk
+      end
+
+      it do
+        col_found = board_check.four_connected_in_a_column(player_disk)
+        expect(col_found).to be_nil
+      end
+    end
+
+    context "when only 2 in a row" do
+      before do
+        start_row = 0
+        col = 0
+        start_row.upto(start_row + 1) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        col_found = board_check.four_connected_in_a_column(player_disk)
+        expect(col_found).to be_nil
+      end
+    end
+
+    context "when only 3 in a row" do
+      before do
+        start_row = 0
+        col = 0
+        start_row.upto(start_row + 2) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        col_found = board_check.four_connected_in_a_column(player_disk)
+        expect(col_found).to be_nil
+      end
+    end
+
+    context "when found in the 2nd column" do
+      before do
+        col = 1 # index based
+        start_row = 2
+        start_row.upto(start_row + 3) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        column_found = board_check.four_connected_in_a_column(player_disk)
+        expect(column_found).to eq([[2,1], [3,1], [4,1], [5,1]])
+      end
+    end
+
+    context "when found in the 3rd column" do
+      before do
+        col = 2 # index based
+        start_row = 0
+        start_row.upto(start_row + 3) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        column_found = board_check.four_connected_in_a_column(player_disk)
+        expect(column_found).to eq([[0,2], [1,2], [2,2], [3,2]])
+      end
+    end
+
+    context "when found in the 5th column" do
+      before do
+        col = 4 # index based
+        start_row = 1
+        start_row.upto(start_row + 3) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        column_found = board_check.four_connected_in_a_column(player_disk)
+        expect(column_found).to eq([[1,4], [2,4], [3,4], [4,4]])
+      end
+    end
+
+    context "when found in the 6th column" do
+      before do
+        col = 5 # index based
+        start_row = 2
+        start_row.upto(start_row + 3) { |row| board_check.grid[row][col] = player_disk }
+      end
+
+      it do
+        column_found = board_check.four_connected_in_a_column(player_disk)
+        expect(column_found).to eq([[2,5], [3,5], [4,5], [5,5]])
+      end
+    end
+  end
 end

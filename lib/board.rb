@@ -76,6 +76,36 @@ class Board
     four_in_a_row
   end
 
+  def four_connected_in_a_column(player_disk)
+    four_in_a_column = nil
+    columns_to_scan = grid.first.size
+    rows_to_scan = 3
+
+    columns_to_scan.times do |column_to_scan|
+
+      rows_to_scan.times do |row_to_scan|
+
+        next unless grid[row_to_scan][column_to_scan] == player_disk &&
+          grid[row_to_scan + 1][column_to_scan] == player_disk &&
+          grid[row_to_scan + 2][column_to_scan] == player_disk &&
+          grid[row_to_scan + 3][column_to_scan] == player_disk
+
+        four_in_a_column = [
+          [row_to_scan, column_to_scan],
+          [row_to_scan+1, column_to_scan],
+          [row_to_scan+2, column_to_scan],
+          [row_to_scan+3, column_to_scan],
+        ]
+
+        break if four_in_a_column
+      end
+
+      break if four_in_a_column
+    end
+
+    four_in_a_column
+  end
+
   private
 
   def set_key
