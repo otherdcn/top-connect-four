@@ -400,7 +400,7 @@ describe Board do
       end
     end
 
-    context "when only 1 in a row" do
+    context "when only 1 in a column" do
       before do
         board_check.grid[1][1] = player_disk
       end
@@ -411,7 +411,7 @@ describe Board do
       end
     end
 
-    context "when only 2 in a row" do
+    context "when only 2 in a column" do
       before do
         start_row = 0
         col = 0
@@ -424,7 +424,7 @@ describe Board do
       end
     end
 
-    context "when only 3 in a row" do
+    context "when only 3 in a column" do
       before do
         start_row = 0
         col = 0
@@ -486,6 +486,129 @@ describe Board do
       it do
         column_found = board_check.four_connected_in_a_column(player_disk)
         expect(column_found).to eq([[2,5], [3,5], [4,5], [5,5]])
+      end
+    end
+  end
+
+  describe "#four_connected_in_a_diagonal" do
+    subject(:board_check) { described_class.new }
+    let(:player_disk) { "X" }
+
+    context "when none is found" do
+      it do
+        diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+        expect(diag_found).to be_nil
+      end
+    end
+
+    context "when only 1 in a diagonal" do
+      before do
+        board_check.grid[2][3] = player_disk
+      end
+
+      it do
+        diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+        expect(diag_found).to be_nil
+      end
+    end
+
+    context "when only 2 in a diagonal" do
+      before do
+        row = 0
+        col = 2
+
+        2.times do |i|
+          board_check.grid[row+i][col+i] = player_disk
+        end
+      end
+
+      it do
+        diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+        expect(diag_found).to be_nil
+      end
+    end
+
+    context "when only 3 in a diagonal" do
+      before do
+        row = 0
+        col = 2
+
+        3.times do |i|
+          board_check.grid[row+i][col+i] = player_disk
+        end
+      end
+
+      it do
+        diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+        expect(diag_found).to be_nil
+      end
+    end
+
+    context "diagonals from left to right" do
+      context "when found starting from co-ordinate [1,0]" do
+        before do
+          row = 1
+          col = 0
+
+          4.times do |i|
+            board_check.grid[row+i][col+i] = player_disk
+          end
+        end
+
+        it do
+          diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+          expect(diag_found).to eq([[1,0], [2,1], [3,2], [4,3]])
+        end
+      end
+
+      context "when found starting from co-ordinate [2,3]" do
+        before do
+          row = 2
+          col = 3
+
+          4.times do |i|
+            board_check.grid[row+i][col+i] = player_disk
+          end
+        end
+
+        it do
+          diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+          expect(diag_found).to eq([[2,3], [3,4], [4,5], [5,6]])
+        end
+      end
+    end
+
+    context "diagonals from right to left" do
+      context "when found starting from co-ordinate [0,5]" do
+        before do
+          row = 0
+          col = 5
+
+          4.times do |i|
+            board_check.grid[row+i][col-i] = player_disk
+          end
+        end
+
+        it do
+          diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+          expect(diag_found).to eq([[0,5], [1,4], [2,3], [3,2]])
+        end
+      end
+
+      context "when found starting from co-ordinate [2,3]" do
+        before do
+          row = 2
+          col = 3
+
+          4.times do |i|
+            board_check.grid[row+i][col-i] = player_disk
+          end
+        end
+
+        it do
+          diag_found = board_check.four_connected_in_a_diagonal(player_disk)
+          expect(diag_found).to eq([[2,3], [3,2], [4,1], [5,0]])
+        end
       end
     end
   end

@@ -106,6 +106,13 @@ class Board
     four_in_a_column
   end
 
+  def four_connected_in_a_diagonal(player_disk)
+    scan_from_left  = left_to_right_diagonal(player_disk)
+    return scan_from_left unless scan_from_left.nil?
+
+    right_to_left_diagonal(player_disk)
+  end
+
   private
 
   def set_key
@@ -159,5 +166,65 @@ class Board
     col = (col.to_i - 1).to_s
 
     @points_accessible[@points_accessible.index(point_id)] = row+col
+  end
+
+  def left_to_right_diagonal(player_disk)
+    four_in_a_diag = nil
+    columns_to_scan = 4
+    rows_to_scan = 3
+
+    columns_to_scan.times do |column_to_scan|
+
+      rows_to_scan.times do |row_to_scan|
+        next unless grid[row_to_scan][column_to_scan] == player_disk &&
+          grid[row_to_scan + 1][column_to_scan + 1] == player_disk &&
+          grid[row_to_scan + 2][column_to_scan + 2] == player_disk &&
+          grid[row_to_scan + 3][column_to_scan + 3] == player_disk
+
+        four_in_a_diag = [
+          [row_to_scan, column_to_scan],
+          [row_to_scan+1, column_to_scan+1],
+          [row_to_scan+2, column_to_scan+2],
+          [row_to_scan+3, column_to_scan+3],
+        ]
+
+        break if four_in_a_diag
+      end
+
+      break if four_in_a_diag
+    end
+
+    four_in_a_diag
+  end
+
+  def right_to_left_diagonal(player_disk)
+    four_in_a_diag = nil
+    #columns_to_scan = 3.upto(6).reverse_each
+    columns_to_scan = [6,5,4,3]
+    rows_to_scan = 3
+
+    #columns_to_scan.tap { |x| x.to_a }.map(&:to_i).each do |column_to_scan|
+    columns_to_scan.each do |column_to_scan|
+
+      rows_to_scan.times do |row_to_scan|
+        next unless grid[row_to_scan][column_to_scan] == player_disk &&
+          grid[row_to_scan + 1][column_to_scan - 1] == player_disk &&
+          grid[row_to_scan + 2][column_to_scan - 2] == player_disk &&
+          grid[row_to_scan + 3][column_to_scan - 3] == player_disk
+
+        four_in_a_diag = [
+          [row_to_scan, column_to_scan],
+          [row_to_scan+1, column_to_scan-1],
+          [row_to_scan+2, column_to_scan-2],
+          [row_to_scan+3, column_to_scan-3],
+        ]
+
+        break if four_in_a_diag
+      end
+
+      break if four_in_a_diag
+    end
+
+    four_in_a_diag
   end
 end
