@@ -51,106 +51,77 @@ describe Board do
     let(:points_id_coords) { [[1,0], [4,1], [0,2], [2,3], [3,4], [5,5], [3,6]] }
 
     context "checking validity of input" do
-      let(:invalid_point) { ["EE3", "P3", "PP", "A", "4", ""] }
+      let(:invalid_point) { ["EE3", "P3", "PP", "A6", "4", ""] }
 
-      context "given a valid point 'A6'" do
+      context "given a valid point 'A'" do
         it "raises no error" do
-          expect { board.insert_token(player_token, "A6") }.to_not raise_error
+          expect { board.insert_token(player_token, "A") }.to_not raise_error
+        end
+      end
+
+
+      context "given a valid point 'F'" do
+        it "raises no error" do
+          expect { board.insert_token(player_token, "F") }.to_not raise_error
+        end
+      end
+
+      context "given an  invalid point 'A6'" do
+        it "raises StandardError instance" do
+          expect { board.insert_token(player_token, invalid_point[3]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
 
       context "given an invalid point 'EE3'" do
         it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[0]) }.to raise_error(StandardError, "Invalid Point ID provided")
+          expect { board.insert_token(player_token, invalid_point[0]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
 
       context "given an invalid point 'P3'" do
         it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[1]) }.to raise_error(StandardError, "Invalid Point ID provided")
+          expect { board.insert_token(player_token, invalid_point[1]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
 
       context "given an invalid point 'PP'" do
         it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[2]) }.to raise_error(StandardError, "Invalid Point ID provided")
-        end
-      end
-
-      context "given an invalid point 'A'" do
-        it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[3]) }.to raise_error(StandardError, "Invalid Point ID provided")
+          expect { board.insert_token(player_token, invalid_point[2]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
 
       context "given an invalid point '4'" do
         it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[4]) }.to raise_error(StandardError, "Invalid Point ID provided")
+          expect { board.insert_token(player_token, invalid_point[4]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
 
       context "given an invalid point '' (empty string)" do
         it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, invalid_point[5]) }.to raise_error(StandardError, "Invalid Point ID provided")
-        end
-      end
-    end
-
-    context "checking availability of input" do
-      let(:unavailable_points) { %w[A6 B6 B5 C6 D6 E6 E5] }
-      let(:accessible_points) { %w[A5 B4 C5 D5 E4 F6 G6] }
-
-      before do
-        board.instance_variable_set(:@points_marked, unavailable_points)
-        board.instance_variable_set(:@points_accessible, accessible_points)
-      end
-
-      context "given an available input A5" do
-        it "raises no error" do
-          expect { board.insert_token(player_token, "A5") }.to_not raise_error
-        end
-      end
-
-      context "given an unavailable input A6" do
-        it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, unavailable_points[0]) }.to raise_error(StandardError, "Unavailable Point ID provided")
-        end
-      end
-
-      context "given an unavailable input B6" do
-        it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, unavailable_points[1]) }.to raise_error(StandardError, "Unavailable Point ID provided")
-        end
-      end
-
-      context "given an unavailable input B5" do
-        it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, unavailable_points[2]) }.to raise_error(StandardError, "Unavailable Point ID provided")
-        end
-      end
-
-      context "given an unavailable input E5" do
-        it "raises a StandardError instance" do
-          expect { board.insert_token(player_token, unavailable_points[6]) }.to raise_error(StandardError, "Unavailable Point ID provided")
+          expect { board.insert_token(player_token, invalid_point[5]) }.to raise_error(StandardError, "Column provided is invalid")
         end
       end
     end
 
     context "checking accessibility of input" do
-      it "raises no error given an accessible 'A6' point_id" do
-        expect { board.insert_token(player_token, "A6") }.to_not raise_error
+      before do
+        board.instance_variable_set(:@points_accessible, %w[A5 B6 C6 D6 E6 F6 G0])
       end
 
-      it "raises no error given an accessible 'B6' point_id" do
-        expect { board.insert_token(player_token, "B6") }.to_not raise_error
+      it "raises no error given an accessible 'A' point_id" do
+        expect { board.insert_token(player_token, "A") }.to_not raise_error
       end
 
-      it "raises no error given an accessible 'F6' point_id" do
-        expect { board.insert_token(player_token, "F6") }.to_not raise_error
+      it "raises no error given an accessible 'B' point_id" do
+        expect { board.insert_token(player_token, "B") }.to_not raise_error
       end
 
-      it "raises a StandardError instance given an inaccessible 'A5' point_id" do
-        expect { board.insert_token(player_token, "A5") }.to raise_error(StandardError, "Blocked Point ID provided")
+      it "raises no error given an accessible 'F' point_id" do
+        expect { board.insert_token(player_token, "F") }.to_not raise_error
+      end
+
+      it "raises a StandardError instance given an inaccessible 'G' point_id" do
+        expect { board.insert_token(player_token, "G") }.to raise_error(StandardError, "Column provided is full")
       end
     end
 
@@ -159,39 +130,39 @@ describe Board do
         board.instance_variable_set(:@points_accessible, points_ids)
       end
 
-      it "locates and returns 'A2' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[0])
+      it "locates and returns 'A' position" do
+        point_id_coord = board.insert_token(player_token, "A")
         expect(point_id_coord).to eq(points_id_coords[0])
       end
 
-      it "locates and returns 'G4' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[1])
-        expect(point_id_coord).to eq(points_id_coords[1])
+      it "locates and returns 'G' position" do
+        point_id_coord = board.insert_token(player_token, "G")
+        expect(point_id_coord).to eq(points_id_coords[6])
       end
 
-      it "locates and returns 'C1' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[2])
+      it "locates and returns 'C' position" do
+        point_id_coord = board.insert_token(player_token, "C")
         expect(point_id_coord).to eq(points_id_coords[2])
       end
 
-      it "locates and returns 'F6' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[3])
-        expect(point_id_coord).to eq(points_id_coords[3])
-      end
-
-      it "locates and returns 'E4' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[4])
-        expect(point_id_coord).to eq(points_id_coords[4])
-      end
-
-      it "locates and returns 'D3' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[5])
+      it "locates and returns 'F' position" do
+        point_id_coord = board.insert_token(player_token, "F")
         expect(point_id_coord).to eq(points_id_coords[5])
       end
 
-      it "locates and returns 'B5' position" do
-        point_id_coord = board.insert_token(player_token, points_ids[6])
-        expect(point_id_coord).to eq(points_id_coords[6])
+      it "locates and returns 'E' position" do
+        point_id_coord = board.insert_token(player_token, "E")
+        expect(point_id_coord).to eq(points_id_coords[4])
+      end
+
+      it "locates and returns 'D' position" do
+        point_id_coord = board.insert_token(player_token, "D")
+        expect(point_id_coord).to eq(points_id_coords[3])
+      end
+
+      it "locates and returns 'B' position" do
+        point_id_coord = board.insert_token(player_token, "B")
+        expect(point_id_coord).to eq(points_id_coords[1])
       end
     end
 
@@ -202,79 +173,37 @@ describe Board do
 
       it "changes the element's value for 'A2'" do
         row, col = points_id_coords[0]
-        expect { board.insert_token(player_token, points_ids[0]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "A") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'B5'" do
         row, col = points_id_coords[1]
-        expect { board.insert_token(player_token, points_ids[1]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "B") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'C1'" do
         row, col = points_id_coords[2]
-        expect { board.insert_token(player_token, points_ids[2]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "C") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'D3'" do
         row, col = points_id_coords[3]
-        expect { board.insert_token(player_token, points_ids[3]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "D") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'E4'" do
         row, col = points_id_coords[4]
-        expect { board.insert_token(player_token, points_ids[4]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "E") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'F6'" do
         row, col = points_id_coords[5]
-        expect { board.insert_token(player_token, points_ids[5]) }.to change { board.grid[row][col] }.from(".").to(player_token)
+        expect { board.insert_token(player_token, "F") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
 
       it "changes the element's value for 'G4'" do
         row, col = points_id_coords[6]
-        expect { board.insert_token(player_token, points_ids[6]) }.to change { board.grid[row][col] }.from(".").to(player_token)
-      end
-    end
-
-    context "adding point_id to points_marked array" do
-      before do
-        @points_marked = board.instance_variable_get(:@points_marked)
-        board.instance_variable_set(:@points_accessible, points_ids.dup)
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[0])
-        expect(@points_marked).to include(points_ids[0])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[1])
-        expect(@points_marked).to include(points_ids[1])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[2])
-        expect(@points_marked).to include(points_ids[2])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[3])
-        expect(@points_marked).to include(points_ids[3])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[4])
-        expect(@points_marked).to include(points_ids[4])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[5])
-        expect(@points_marked).to include(points_ids[5])
-      end
-
-      it do
-        board.insert_token(player_token, points_ids[6])
-        expect(@points_marked).to include(points_ids[6])
+        expect { board.insert_token(player_token, "G") }.to change { board.grid[row][col] }.from(".").to(player_token)
       end
     end
 
@@ -284,19 +213,19 @@ describe Board do
       end
 
       it do
-        expect { board.insert_token(player_token, "B6") }.to change { @points_accessible[1] }.from("B6").to("B5")
+        expect { board.insert_token(player_token, "B") }.to change { @points_accessible[1] }.from("B6").to("B5")
       end
 
       it do
-        expect { board.insert_token(player_token, "D6") }.to change { @points_accessible[3] }.from("D6").to("D5")
+        expect { board.insert_token(player_token, "D") }.to change { @points_accessible[3] }.from("D6").to("D5")
       end
 
       it do
-        expect { board.insert_token(player_token, "F6") }.to change { @points_accessible[5] }.from("F6").to("F5")
+        expect { board.insert_token(player_token, "F") }.to change { @points_accessible[5] }.from("F6").to("F5")
       end
 
       it do
-        expect { board.insert_token(player_token, "G6") }.to change { @points_accessible[6] }.from("G6").to("G5")
+        expect { board.insert_token(player_token, "G") }.to change { @points_accessible[6] }.from("G6").to("G5")
       end
     end
   end

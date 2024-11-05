@@ -6,20 +6,16 @@ class Board
   def initialize
     @grid = Array.new(6) { Array.new(7, ".") }
     @key = set_key
-    @points_marked = []
     @points_accessible = @key.last.dup
   end
 
   def insert_token(player_token, point_id)
-    raise StandardError, "Invalid Point ID provided" unless valid?(point_id)
-    raise StandardError, "Unavailable Point ID provided" unless available?(point_id)
-    raise StandardError, "Blocked Point ID provided" unless accessible?(point_id)
+    raise StandardError, "Column provided is invalid" unless valid?(point_id)
+    raise StandardError, "Column provided is full" unless accessible?(point_id)
 
     point_coord = get_point_id_coord(point_id)
 
     grid[point_coord[0]][point_coord[1]] = player_token
-
-    make_point_unavailable(point_id)
 
     replace_accessible_point_with_new(point_id)
 
@@ -133,23 +129,22 @@ class Board
   end
 
   def valid?(point_id)
-    key.flatten.include?(point_id)
-  end
-
-  def available?(point_id)
-    !@points_marked.include?(point_id)
+    %w[A B C D E F G].include?(point_id)
   end
 
   def accessible?(point_id)
-    @points_accessible.include?(point_id)
+    !@points_accessible.find { |point| point.split("").first == point_id }
+                       .split("")[1].to_i.zero?
   end
 
   def get_point_id_coord(point_id)
+    full_point = @points_accessible.find { |point| point.split("").first == point_id }
+
     point_coord = nil
 
     key.each_with_index do |row_ele, row_idx|
       row_ele.each_with_index do |col_ele, col_idx|
-        point_coord = [row_idx, col_idx] if point_id == col_ele
+        point_coord = [row_idx, col_idx] if full_point == col_ele
         break unless point_coord.nil?
       end
     end
@@ -157,15 +152,12 @@ class Board
     point_coord
   end
 
-  def make_point_unavailable(point_id)
-    @points_marked << point_id
-  end
-
   def replace_accessible_point_with_new(point_id)
-    row, col = point_id.split("")
+    full_point = @points_accessible.find { |point| point.split("").first == point_id }
+    row, col = full_point.split("")
     col = (col.to_i - 1).to_s
 
-    @points_accessible[@points_accessible.index(point_id)] = row+col
+    @points_accessible[@points_accessible.index(full_point)] = row+col
   end
 
   def left_to_right_diagonal(player_token)
