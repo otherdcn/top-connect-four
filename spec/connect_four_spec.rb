@@ -22,7 +22,7 @@ describe ConnectFour do
       allow(game_play).to receive(:puts)
       allow(board_play).to receive(:display_grid)
       allow(game_play).to receive(:select_point_on_board).and_return(point_id)
-      allow(board_play).to receive(:insert_disk).with(player.token, point_id).and_return(point_coord)
+      allow(board_play).to receive(:insert_token).with(player.token, point_id).and_return(point_coord)
       allow(game_play).to receive(:announce_winner)
     end
 
@@ -67,7 +67,7 @@ describe ConnectFour do
     let(:player) { game_input.player_one }
     let(:point_id) { "A6" }
     let(:point_coord) { [5,0] }
-    let(:board_input) { instance_double(Board, insert_disk: point_coord) }
+    let(:board_input) { instance_double(Board, insert_token: point_coord) }
 
     before do
       allow(game_input).to receive(:prompt_input).and_return(point_id)
@@ -75,14 +75,14 @@ describe ConnectFour do
 
     context "when sending messages to Board" do
       it do
-        expect(board_input).to receive(:insert_disk).with(player.token, point_id)
+        expect(board_input).to receive(:insert_token).with(player.token, point_id)
         game_input.select_point_on_board(player)
       end
     end
 
     context "when either validity, availability, or accessibility, fails 3 times, and then a pass occurs the fourth time" do
       before do
-        allow(board_input).to receive(:insert_disk).and_return(nil, nil, nil, point_id)
+        allow(board_input).to receive(:insert_token).and_return(nil, nil, nil, point_id)
       end
 
       it do

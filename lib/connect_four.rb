@@ -43,7 +43,7 @@ class ConnectFour
       begin
       input = prompt_input
 
-      point_coord = board.insert_disk(player.token, input.upcase)
+      point_coord = board.insert_token(player.token, input.upcase)
       rescue StandardError => msg
         puts msg
       end
