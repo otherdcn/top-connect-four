@@ -1,3 +1,4 @@
+require 'colorize'
 require_relative 'board'
 require_relative 'player'
 
@@ -17,7 +18,7 @@ class ConnectFour
 
     loop do
       [player_one, player_two].each do |player|
-        puts "#{player.name}: your turn to play!"
+        puts "\n#{player.name}: your turn to play!".black.on_white
 
         board.display_grid(point_coord)
 
@@ -45,7 +46,7 @@ class ConnectFour
 
       point_coord = board.insert_token(player.token, input.upcase)
       rescue StandardError => msg
-        puts msg
+        puts msg.to_s.yellow
       end
 
       break if point_coord
@@ -55,7 +56,7 @@ class ConnectFour
   end
 
   def prompt_input
-    print "Enter point: "
+    print "\nEnter point: "
     gets.chomp
   end
 
@@ -78,5 +79,10 @@ class ConnectFour
   end
 
   def announce_winner
+    puts "*******************************************"
+    puts "\n=====> #{@winner.name} is the winner!".green
+    puts "\n*******************************************"
+
+    board.display_grid(nil, @winning_coords)
   end
 end
