@@ -7,7 +7,7 @@ class Board
     @grid = Array.new(6) { Array.new(7, ".") }
     @key = set_key
     @points_marked = []
-    @points_accessible = @key.last
+    @points_accessible = @key.last.dup
   end
 
   def insert_disk(player_disk, point_id)
