@@ -56,7 +56,7 @@ class ConnectFour
   end
 
   def prompt_input
-    print "\nEnter point: "
+    print "\nEnter column: "
     gets.chomp
   end
 
@@ -77,6 +77,8 @@ class ConnectFour
       return false
     end
   end
+
+  private
 
   def announce_winner
     puts "*******************************************"

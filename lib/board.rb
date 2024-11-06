@@ -23,10 +23,12 @@ class Board
   end
 
   def display_grid(marked_point = nil, winning_points = [])
-    print "\n-------- Grid -------- ".center(31).underline
-    print "-------- Key --------".center(31).underline
-    puts ""
+    puts "\n-------- Grid -------- ".center(25)
+
+    puts %w[ A B C D E F G].join(" ".ljust(3)).black.on_yellow
+
     point_padding = 4
+
     grid.each_with_index do |row, row_idx|
       key_row = key[row_idx]
       row.each_with_index do |point, column_idx|
@@ -39,10 +41,6 @@ class Board
         end
 
         next unless column_idx == 6
-
-        print "|".center(10)
-
-        key_row.each { |kdp| print kdp.ljust(point_padding)}
 
         puts "" if column_idx == 6
       end
