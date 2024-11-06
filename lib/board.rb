@@ -6,18 +6,18 @@ class Board
   def initialize
     @grid = Array.new(6) { Array.new(7, ".") }
     @key = set_key
-    @points_accessible = @key.last.dup
+    @points_available = @key.last.dup
   end
 
-  def insert_token(player_token, point_id)
-    raise StandardError, "Column provided is invalid" unless valid?(point_id)
-    raise StandardError, "Column provided is full" unless accessible?(point_id)
+  def insert_token(player_token, column)
+    raise StandardError, "Column provided is invalid" unless valid?(column)
+    raise StandardError, "Column provided is full" unless available?(column)
 
-    point_coord = get_point_id_coord(point_id)
+    point_coord = get_column_coord(column)
 
     grid[point_coord[0]][point_coord[1]] = player_token
 
-    replace_accessible_point_with_new(point_id)
+    replace_available_point_with_new(column)
 
     point_coord
   end
@@ -29,22 +29,22 @@ class Board
     point_padding = 4
     grid.each_with_index do |row, row_idx|
       key_row = key[row_idx]
-      row.each_with_index do |point, point_idx|
-        if marked_point == [row_idx, point_idx]
+      row.each_with_index do |point, column_idx|
+        if marked_point == [row_idx, column_idx]
           print "#{point}".ljust(point_padding).colorize(:magenta)
-        elsif winning_points.include?([row_idx, point_idx])
+        elsif winning_points.include?([row_idx, column_idx])
           print "#{point}".ljust(point_padding).colorize(:green)
         else
           print "#{point}".ljust(point_padding).colorize(:default)
         end
 
-        next unless point_idx == 6
+        next unless column_idx == 6
 
         print "|".center(10)
 
         key_row.each { |kdp| print kdp.ljust(point_padding)}
 
-        puts "" if point_idx == 6
+        puts "" if column_idx == 6
       end
     end
   end
@@ -128,17 +128,17 @@ class Board
     final_board
   end
 
-  def valid?(point_id)
-    %w[A B C D E F G].include?(point_id)
+  def valid?(column)
+    %w[A B C D E F G].include?(column)
   end
 
-  def accessible?(point_id)
-    !@points_accessible.find { |point| point.split("").first == point_id }
+  def available?(column)
+    !@points_available.find { |point| point.split("").first == column }
                        .split("")[1].to_i.zero?
   end
 
-  def get_point_id_coord(point_id)
-    full_point = @points_accessible.find { |point| point.split("").first == point_id }
+  def get_column_coord(column)
+    full_point = @points_available.find { |point| point.split("").first == column }
 
     point_coord = nil
 
@@ -152,12 +152,12 @@ class Board
     point_coord
   end
 
-  def replace_accessible_point_with_new(point_id)
-    full_point = @points_accessible.find { |point| point.split("").first == point_id }
+  def replace_available_point_with_new(column)
+    full_point = @points_available.find { |point| point.split("").first == column }
     row, col = full_point.split("")
     col = (col.to_i - 1).to_s
 
-    @points_accessible[@points_accessible.index(full_point)] = row+col
+    @points_available[@points_available.index(full_point)] = row+col
   end
 
   def left_to_right_diagonal(player_token)
